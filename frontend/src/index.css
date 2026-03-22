@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased;
+  }
+}
+
+@layer components {
+  .btn-primario {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 
+           transition-colors duration-200 font-medium disabled:opacity-50 
+           disabled:cursor-not-allowed text-sm;
+  }
+
+  .btn-secundario {
+    @apply bg-white text-blue-600 border border-blue-600 px-4 py-2 rounded-lg 
+           hover:bg-blue-50 transition-colors duration-200 font-medium text-sm;
+  }
+
+  .btn-perigo {
+    @apply bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 
+           transition-colors duration-200 font-medium text-sm;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-slate-100 p-6;
+  }
+
+  .badge-pendente {
+    @apply bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-processando {
+    @apply bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-concluido {
+    @apply bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-cancelado {
+    @apply bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+}

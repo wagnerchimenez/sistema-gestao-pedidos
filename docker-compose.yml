@@ -1,0 +1,77 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sgp_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: sistema_gestao
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: sgp_redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sgp_backend
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: sistema_gestao
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PORT: 3001
+      NODE_ENV: production
+      CORS_ORIGIN: http://localhost:3000
+      RELATORIOS_PATH: /app/relatorios
+      SQLITE_PATH: /app/data/auditoria.sqlite
+    ports:
+      - '3001:3001'
+    volumes:
+      - relatorios_data:/app/relatorios
+      - sqlite_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3001
+    container_name: sgp_frontend
+    ports:
+      - '3000:80'
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  relatorios_data:
+  sqlite_data:
