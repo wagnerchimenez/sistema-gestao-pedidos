@@ -1,0 +1,57 @@
+# Ambiente de desenvolvimento com hot reload
+#
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# O que muda em relação ao ambiente de produção:
+#   - Backend: nest start --watch → recarrega automaticamente ao salvar em ./backend/src
+#   - Frontend: Vite dev server com HMR → atualiza o browser ao salvar em ./frontend/src
+#   - Porta de debug (9229) exposta para attach de debugger
+#   - NODE_ENV=development
+#
+# IMPORTANTE: após instalar novos pacotes (npm install), reconstrua a imagem:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development       # para no estágio 'development' do Dockerfile
+    container_name: sgp_backend_dev
+    command: npm run start:dev
+    environment:
+      NODE_ENV: development
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: sistema_gestao
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:3000
+      RELATORIOS_PATH: /app/relatorios
+      SQLITE_PATH: /app/data/auditoria.sqlite
+    ports:
+      - '3001:3001'
+      - '9229:9229'             # porta para Node.js debugger (VS Code / Chrome DevTools)
+    volumes:
+      - ./backend:/app          # monta todo o código-fonte do host
+      - /app/node_modules       # volume anônimo: preserva node_modules instalado na imagem
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: sgp_frontend_dev
+    environment:
+      # Proxy do Vite aponta para o serviço backend na rede interna Docker
+      VITE_PROXY_TARGET: http://backend:3001
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app         # monta todo o código-fonte do host (HMR do Vite)
+      - /app/node_modules       # volume anônimo: preserva node_modules instalado na imagem
+    depends_on:
+      - backend

@@ -7,6 +7,7 @@ import { PedidosModulo } from './modulos/pedidos/pedidos.modulo';
 import { RelatoriosModulo } from './modulos/relatorios/relatorios.modulo';
 import { DashboardModulo } from './modulos/dashboard/dashboard.modulo';
 import { AuditoriaModulo } from './modulos/auditoria/auditoria.modulo';
+import { SaudeModulo } from './modulos/saude/saude.modulo';
 import { PedidoSchema } from './modulos/pedidos/infraestrutura/persistencia/entidades/pedido.schema';
 import { LogAuditoriaSchema } from './modulos/auditoria/infraestrutura/persistencia/entidades/log-auditoria.schema';
 
@@ -70,6 +71,7 @@ import { LogAuditoriaSchema } from './modulos/auditoria/infraestrutura/persisten
     RelatoriosModulo,
     DashboardModulo,
     AuditoriaModulo,
+    SaudeModulo,
   ],
 })
 export class AppModule {}
